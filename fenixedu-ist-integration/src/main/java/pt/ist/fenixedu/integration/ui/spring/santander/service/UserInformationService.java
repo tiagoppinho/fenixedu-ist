@@ -3,15 +3,12 @@ package pt.ist.fenixedu.integration.ui.spring.santander.service;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import java.util.function.BiFunction;
 
 import org.fenixedu.academic.domain.ExecutionYear;
 import org.fenixedu.academic.domain.Person;
 import org.fenixedu.academic.domain.accessControl.ActivePhdProcessesGroup;
 import org.fenixedu.academic.domain.accounting.events.insurance.InsuranceEvent;
-import org.fenixedu.academic.domain.phd.PhdIndividualProgramProcess;
-import org.fenixedu.academic.domain.phd.PhdIndividualProgramProcessState;
 import org.fenixedu.academic.domain.photograph.Picture;
 import org.fenixedu.academic.domain.student.Registration;
 import org.fenixedu.bennu.core.domain.User;
@@ -26,6 +23,7 @@ import pt.ist.fenixedu.contracts.domain.accessControl.ActiveResearchers;
 import pt.ist.fenixedu.contracts.domain.accessControl.CampusEmployeeGroup;
 import pt.ist.fenixedu.contracts.domain.accessControl.CampusGrantOwnerGroup;
 import pt.ist.fenixedu.contracts.domain.accessControl.CampusResearcherGroup;
+import pt.ist.fenixedu.contracts.domain.accessControl.SapBackedGroup;
 import pt.ist.fenixedu.integration.dto.PersonInformationDTO;
 
 @Service
@@ -72,15 +70,15 @@ public class UserInformationService implements IUserInfoService {
     }
 
     private boolean treatAsResearcher(User user) {
-        return new ActiveResearchers().isMember(user);
+        return new ActiveResearchers().isMember(user) && new ActiveResearchers().isFromInstitution(user, "IST");
     }
 
     private boolean treatAsEmployee(User user) {
-        return new ActiveEmployees().isMember(user);
+        return new ActiveEmployees().isMember(user) && new ActiveEmployees().isFromInstitution(user, "IST");
     }
 
     private boolean treatAsGrantOwner(User user) {
-        return new ActiveGrantOwner().isMember(user);
+        return new ActiveGrantOwner().isMember(user) && new ActiveGrantOwner().isFromInstitution(user, "IST");
     }
 
     private boolean treatAsStudent(User user, ExecutionYear executionYear) {
