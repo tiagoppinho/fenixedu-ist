@@ -25,6 +25,7 @@ import pt.ist.fenixedu.contracts.domain.accessControl.ActiveGrantOwner;
 import pt.ist.fenixedu.contracts.domain.accessControl.ActiveResearchers;
 import pt.ist.fenixedu.contracts.domain.accessControl.CampusEmployeeGroup;
 import pt.ist.fenixedu.contracts.domain.accessControl.CampusGrantOwnerGroup;
+import pt.ist.fenixedu.contracts.domain.accessControl.CampusResearcherGroup;
 import pt.ist.fenixedu.integration.dto.PersonInformationDTO;
 
 @Service
@@ -34,7 +35,10 @@ public class UserInformationService implements IUserInfoService {
             (space, employeeUser) -> CampusEmployeeGroup.get(space).isMember(employeeUser);
 
     private final static BiFunction<Space, User, Boolean> grantOwnerGroupFunction =
-            (space, employeeUser) -> CampusGrantOwnerGroup.get(space).isMember(employeeUser);
+            (space, grantOwnerUser) -> CampusGrantOwnerGroup.get(space).isMember(grantOwnerUser);
+
+    private final static BiFunction<Space, User, Boolean> researcherGroupFunction =
+            (space, researcherUser) -> CampusResearcherGroup.get(space).isMember(researcherUser);
 
     @Override
     public List<String> getUserRoles(User user) {
@@ -121,8 +125,9 @@ public class UserInformationService implements IUserInfoService {
 
         if (campus == null) {
             final BiFunction<Space, User, Boolean> groupFunction =
-                    new ActiveEmployees().isMember(user) ? employeeGroupFunction : (new ActiveGrantOwner()
-                            .isMember(user) ? grantOwnerGroupFunction : null);
+                    new ActiveEmployees().isMember(user) ? employeeGroupFunction :
+                    new ActiveGrantOwner().isMember(user) ? grantOwnerGroupFunction :
+                    new ActiveResearchers().isMember(user) ? researcherGroupFunction : null;
 
             campus = groupFunction == null ? null : Space.getTopLevelSpaces().stream()
                     .filter(space -> groupFunction.apply(space, user)).findAny().map(Space::getName).orElse(null);

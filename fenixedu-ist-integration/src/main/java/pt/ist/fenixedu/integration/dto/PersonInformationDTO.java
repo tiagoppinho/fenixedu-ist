@@ -199,15 +199,16 @@ public class PersonInformationDTO {
         if (person.getEmployee() != null) {
             final Unit currentWorkingPlace = person.getEmployee().getCurrentWorkingPlace();
             if (currentWorkingPlace != null) {
+                Space campus = currentWorkingPlace.getCampus();
+
+                if(campus != null) {
+                    setCampus(campus.getName());
+                }
+
                 this.employeeUnit = currentWorkingPlace.getName();
                 if (currentWorkingPlace.getCostCenterCode() != null) {
                     workingCostCenters.add(currentWorkingPlace.getCostCenterCode().toString());
                 }
-            }
-
-            Space currentCampus = person.getEmployee().getCurrentCampus();
-            if (currentCampus != null) {
-                setCampus(currentCampus.getName());
             }
         }
 
