@@ -193,7 +193,11 @@ public class PersonInformationDTO {
         if (person.getTeacher() != null && person.getTeacher().getDepartment() != null) {
             this.teacherDepartment = person.getTeacher().getDepartment().getRealName();
             person.getTeacher().getTeacherAuthorization().ifPresent(teacherAuthorization -> {
-                setCampus(teacherAuthorization.getCampus().getName());
+                Space campus = teacherAuthorization.getCampus();
+
+                if (campus != null) {
+                    setCampus(campus.getName());
+                }
             });
         }
 
@@ -201,7 +205,7 @@ public class PersonInformationDTO {
             final Unit currentWorkingPlace = person.getEmployee().getCurrentWorkingPlace();
             if (currentWorkingPlace != null) {
 
-                if (this.campus != null) {
+                if (this.campus == null) {
                     Space campus = currentWorkingPlace.getCampus();
 
                     if(campus != null) {
