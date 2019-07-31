@@ -123,9 +123,9 @@ public class UserInformationService implements IUserInfoService {
 
         if (campus == null) {
             final BiFunction<Space, User, Boolean> groupFunction =
-                    new ActiveEmployees().isMember(user) ? employeeGroupFunction :
-                    new ActiveGrantOwner().isMember(user) ? grantOwnerGroupFunction :
-                    new ActiveResearchers().isMember(user) ? researcherGroupFunction : null;
+                    new ActiveEmployees().isMember(user) && new ActiveEmployees().isFromInstitution(user, "IST") ? employeeGroupFunction :
+                    new ActiveGrantOwner().isMember(user) && new ActiveGrantOwner().isFromInstitution(user, "IST") ? grantOwnerGroupFunction :
+                    new ActiveResearchers().isMember(user) && new ActiveResearchers().isFromInstitution(user, "IST") ? researcherGroupFunction : null;
 
             campus = groupFunction == null ? null : Space.getTopLevelSpaces().stream()
                     .filter(space -> groupFunction.apply(space, user)).findAny().map(Space::getName).orElse(null);
